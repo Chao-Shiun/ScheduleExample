@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  api:
+    depends_on:
+      - rabbitmq
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - MessageService__RabbitMQ__ConnectionString=amqp://guest:guest@rabbitmq:5672
+
+  rabbitmq:
+    image: rabbitmq:latest
+    ports:
+      - "5672:5672"  # AMQP protocol port
+      - "15672:15672"  # 管理介面端口
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - app-network 

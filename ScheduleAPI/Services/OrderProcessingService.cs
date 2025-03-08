@@ -6,13 +6,13 @@ namespace ScheduleAPI.Services
 {
     public class OrderProcessingService : BackgroundService
     {
-        private readonly RedisService _redisService;
+        private readonly IMessageService _messageService;
         private readonly ILogger<OrderProcessingService> _logger;
         private readonly TimeSpan _processInterval = TimeSpan.FromSeconds(3);
 
-        public OrderProcessingService(RedisService redisService, ILogger<OrderProcessingService> logger)
+        public OrderProcessingService(IMessageService messageService, ILogger<OrderProcessingService> logger)
         {
-            _redisService = redisService;
+            _messageService = messageService;
             _logger = logger;
         }
 
@@ -22,7 +22,7 @@ namespace ScheduleAPI.Services
             {
                 try
                 {
-                    var order = await _redisService.PopOrderAsync();
+                    var order = await _messageService.PopOrderAsync();
                     if (order != null)
                     {
                         await ProcessOrderAsync(order);

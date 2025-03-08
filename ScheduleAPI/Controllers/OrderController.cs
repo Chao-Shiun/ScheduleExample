@@ -8,33 +8,28 @@ namespace ScheduleAPI.Controllers
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly RedisService _redisService;
+        private readonly IMessageService _messageService;
         private readonly ILogger<OrderController> _logger;
 
-        public OrderController(RedisService redisService, ILogger<OrderController> logger)
+        public OrderController(IMessageService messageService, ILogger<OrderController> logger)
         {
-            _redisService = redisService;
+            _messageService = messageService;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder([FromBody] Order order)
+        public async Task<IActionResult> SubmitOrder([FromBody] Order order)
         {
-            if (string.IsNullOrEmpty(order.OrderId))
+            if (order == null)
             {
-                return BadRequest("訂單ID不能為空");
+                return BadRequest("訂單資料不能為空");
             }
 
-            if (order.Amount <= 0)
-            {
-                return BadRequest("金額必須大於零");
-            }
-
-            _logger.LogInformation("接收到新訂單: {OrderId}, 金額: {Amount}", order.OrderId, order.Amount);
+            _logger.LogInformation("接收到訂單: {OrderId}, 金額: {Amount}", order.OrderId, order.Amount);
             
-            await _redisService.PushOrderAsync(order);
+            await _messageService.PushOrderAsync(order);
             
-            return Ok(new { message = "訂單已成功提交", order });
+            return Ok(new { Message = "訂單已提交" });
         }
     }
 } 

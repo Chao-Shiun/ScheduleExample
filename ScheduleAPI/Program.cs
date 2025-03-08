@@ -7,9 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
-// 配置 Redis 服務
-var redisConnectionString = builder.Configuration.GetValue<string>("Redis:ConnectionString") ?? "localhost:6379";
-builder.Services.AddSingleton(new RedisService(redisConnectionString));
+// 註冊消息服務工廠
+builder.Services.AddSingleton<MessageServiceFactory>();
+
+// 註冊消息服務，使用工廠模式創建
+builder.Services.AddSingleton<IMessageService>(provider => 
+{
+    var factory = provider.GetRequiredService<MessageServiceFactory>();
+    return factory.CreateMessageService();
+});
 
 // 添加背景服務
 builder.Services.AddHostedService<OrderProcessingService>();

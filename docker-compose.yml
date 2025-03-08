@@ -8,8 +8,7 @@ services:
     ports:
       - "5566:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - Redis__ConnectionString=redis:6379
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT:-Development}
     depends_on:
       - redis
     networks:
@@ -29,4 +28,5 @@ networks:
     driver: bridge
 
 volumes:
-  redis-data: 
+  redis-data:
+  rabbitmq-data: 
