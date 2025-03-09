@@ -7,8 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
-// 從配置中獲取 RabbitMQ 連接字符串
-var rabbitMqConnectionString = builder.Configuration.GetConnectionString("RabbitMQ") ?? "localhost";
+// 根據環境決定使用的訊息服務
+var environment = builder.Environment.EnvironmentName;
+Console.WriteLine($"目前執行環境: {environment}");
 
 // 註冊消息服務工廠
 builder.Services.AddSingleton<MessageServiceFactory>();
@@ -17,7 +18,21 @@ builder.Services.AddSingleton<MessageServiceFactory>();
 builder.Services.AddSingleton<IMessageService>(provider => 
 {
     var factory = provider.GetRequiredService<MessageServiceFactory>();
-    return factory.CreateMessageService(rabbitMqConnectionString);
+    
+    if (builder.Environment.IsDevelopment())
+    {
+        // 開發環境使用 Redis
+        var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+        Console.WriteLine($"開發環境使用 Redis: {redisConnectionString}");
+        return factory.CreateRedisMessageService(redisConnectionString);
+    }
+    else
+    {
+        // 生產環境使用 RabbitMQ
+        var rabbitMqConnectionString = builder.Configuration.GetConnectionString("RabbitMQ") ?? "localhost";
+        Console.WriteLine($"生產環境使用 RabbitMQ: {rabbitMqConnectionString}");
+        return factory.CreateRabbitMQMessageService(rabbitMqConnectionString);
+    }
 });
 
 // 添加背景服務

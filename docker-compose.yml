@@ -9,8 +9,12 @@ services:
       - "5566:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT:-Development}
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__RabbitMQ=rabbitmq:5672
     depends_on:
       - redis
+      # 在生產環境中依賴 RabbitMQ
+      - ${ENVIRONMENT:-Development}-rabbitmq
     networks:
       - app-network
 
@@ -22,6 +26,26 @@ services:
       - redis-data:/data
     networks:
       - app-network
+
+  # 條件性服務：僅在生產環境中啟動 RabbitMQ
+  Production-rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - app-network
+    profiles:
+      - prod
+
+  # 空服務，在開發環境中替代 RabbitMQ
+  Development-rabbitmq:
+    image: alpine:latest
+    command: echo "RabbitMQ 服務在開發環境中不啟動"
+    profiles:
+      - dev
 
 networks:
   app-network:

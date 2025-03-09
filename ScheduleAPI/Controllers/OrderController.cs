@@ -6,17 +6,9 @@ namespace ScheduleAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OrderController : ControllerBase
+    public class OrderController(IMessageService messageService, ILogger<OrderController> logger)
+        : ControllerBase
     {
-        private readonly IMessageService _messageService;
-        private readonly ILogger<OrderController> _logger;
-
-        public OrderController(IMessageService messageService, ILogger<OrderController> logger)
-        {
-            _messageService = messageService;
-            _logger = logger;
-        }
-
         [HttpPost]
         public async Task<IActionResult> SubmitOrder([FromBody] Order order)
         {
@@ -25,11 +17,11 @@ namespace ScheduleAPI.Controllers
                 return BadRequest("訂單資料不能為空");
             }
 
-            _logger.LogInformation("接收到訂單: {OrderId}, 金額: {Amount}", order.OrderId, order.Amount);
+            logger.LogInformation("接收到訂單: {OrderId}, 金額: {Amount}", order.OrderId, order.Amount);
             
-            await _messageService.PushOrderAsync(order);
+            await messageService.PushOrderAsync(order);
             
-            return Ok(new { Message = "訂單已提交" });
+            return Ok(new { message = "訂單已成功提交", order });
         }
     }
 } 

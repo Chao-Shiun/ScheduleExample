@@ -29,9 +29,30 @@ namespace ScheduleAPI.Services
             return messageServiceType switch
             {
                 "rabbitmq" => new RabbitMqMessageService(connectionString),
+                "redis" => new RedisMessageService(connectionString),
                 // 可以在這裡添加其他消息服務類型
                 _ => new RabbitMqMessageService(connectionString) // 默認使用 RabbitMQ
             };
+        }
+
+        /// <summary>
+        /// 創建 Redis 消息服務
+        /// </summary>
+        /// <param name="connectionString">Redis 連接字符串</param>
+        /// <returns>Redis 消息服務實例</returns>
+        public IMessageService CreateRedisMessageService(string connectionString)
+        {
+            return new RedisMessageService(connectionString);
+        }
+
+        /// <summary>
+        /// 創建 RabbitMQ 消息服務
+        /// </summary>
+        /// <param name="connectionString">RabbitMQ 連接字符串</param>
+        /// <returns>RabbitMQ 消息服務實例</returns>
+        public IMessageService CreateRabbitMQMessageService(string connectionString)
+        {
+            return new RabbitMqMessageService(connectionString);
         }
     }
 } 
