@@ -7,6 +7,10 @@ export ENVIRONMENT=Development
 docker stop $(docker ps -aq) 2>/dev/null || true
 docker rm $(docker ps -aq) 2>/dev/null || true
 
+# 重新構建 API 映像檔
+echo "重新構建 API 映像檔..."
+docker build -t scheduleexample-api -f Dockerfile .
+
 # 創建 Docker 網絡
 docker network create app-network 2>/dev/null || true
 
