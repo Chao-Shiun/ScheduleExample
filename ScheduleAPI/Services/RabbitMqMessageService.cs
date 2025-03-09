@@ -16,16 +16,31 @@ namespace ScheduleAPI.Services
 
         public RabbitMqMessageService(string connectionString)
         {
-            var factory = new ConnectionFactory 
+            // 分析連接字符串
+            var factory = new ConnectionFactory();
+            
+            if (connectionString.StartsWith("amqp://"))
             {
-                HostName = "localhost",  // RabbitMQ 伺服器位址
-                UserName = "guest",      // 預設使用者
-                Password = "guest",      // 預設密碼
-                // 啟用自動恢復連接
-                AutomaticRecoveryEnabled = true,
-                // 嘗試恢復的間隔時間
-                NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
-            };
+                // 使用 URI 設置連接信息
+                factory.Uri = new Uri(connectionString);
+            }
+            else
+            {
+                // 使用簡單的 host:port 格式
+                var parts = connectionString.Split(':');
+                factory.HostName = parts[0];
+                if (parts.Length > 1 && int.TryParse(parts[1], out int port))
+                {
+                    factory.Port = port;
+                }
+            }
+            
+            // 啟用自動恢復連接
+            factory.AutomaticRecoveryEnabled = true;
+            // 嘗試恢復的間隔時間
+            factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(10);
+            
+            Console.WriteLine($"連接到 RabbitMQ: {factory.HostName}:{factory.Port}");
             
             // 使用異步方式創建連接
             _connectionTask = factory.CreateConnectionAsync();
