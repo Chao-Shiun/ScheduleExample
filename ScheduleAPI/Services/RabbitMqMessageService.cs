@@ -45,16 +45,25 @@ namespace ScheduleAPI.Services
 
         public Task<Order?> PopOrderAsync()
         {
-            var result = _channel.BasicGet(QueueName, true);
-            if (result == null)
+            try
             {
+                var result = _channel.BasicGet(QueueName, true);
+                if (result == null)
+                {
+                    return Task.FromResult<Order?>(null);
+                }
+
+                var message = Encoding.UTF8.GetString(result.Body.ToArray());
+                var order = JsonSerializer.Deserialize<Order>(message);
+                
+                return Task.FromResult(order);
+            }
+            catch (Exception ex)
+            {
+                // 記錄錯誤並返回 null
+                Console.WriteLine($"從 RabbitMQ 獲取消息時發生錯誤: {ex.Message}");
                 return Task.FromResult<Order?>(null);
             }
-
-            var message = Encoding.UTF8.GetString(result.Body.ToArray());
-            var order = JsonSerializer.Deserialize<Order>(message);
-            
-            return Task.FromResult(order);
         }
 
         public void Dispose()
