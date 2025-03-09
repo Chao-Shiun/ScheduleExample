@@ -7,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
+// 從配置中獲取 RabbitMQ 連接字符串
+var rabbitMqConnectionString = builder.Configuration.GetConnectionString("RabbitMQ") ?? "localhost";
+
 // 註冊消息服務工廠
 builder.Services.AddSingleton<MessageServiceFactory>();
 
@@ -14,7 +17,7 @@ builder.Services.AddSingleton<MessageServiceFactory>();
 builder.Services.AddSingleton<IMessageService>(provider => 
 {
     var factory = provider.GetRequiredService<MessageServiceFactory>();
-    return factory.CreateMessageService();
+    return factory.CreateMessageService(rabbitMqConnectionString);
 });
 
 // 添加背景服務

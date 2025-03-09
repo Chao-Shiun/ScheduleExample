@@ -18,15 +18,19 @@ namespace ScheduleAPI.Services
         /// 根據配置創建消息服務
         /// </summary>
         /// <returns>消息服務實例</returns>
-        public IMessageService CreateMessageService()
+        public IMessageService CreateMessageService(string? connectionString = null)
         {
-            var messageType = _configuration.GetValue<string>("MessageService:Type") ?? "Redis";
-            
-            return messageType.ToLower() switch
+            // 如果沒有提供連接字符串，則從配置中獲取
+            connectionString ??= _configuration.GetConnectionString("RabbitMQ") ?? "localhost";
+
+            // 根據配置決定使用哪種消息服務
+            var messageServiceType = _configuration.GetValue<string>("MessageService:Type")?.ToLower() ?? "rabbitmq";
+
+            return messageServiceType switch
             {
-                "redis" => new RedisMessageService(_configuration.GetValue<string>("MessageService:Redis:ConnectionString") ?? "localhost:6379"),
-                "rabbitmq" => new RabbitMqMessageService(_configuration.GetValue<string>("MessageService:RabbitMQ:ConnectionString") ?? "amqp://guest:guest@localhost:5672"),
-                _ => new RedisMessageService(_configuration.GetValue<string>("MessageService:Redis:ConnectionString") ?? "localhost:6379")
+                "rabbitmq" => new RabbitMqMessageService(connectionString),
+                // 可以在這裡添加其他消息服務類型
+                _ => new RabbitMqMessageService(connectionString) // 默認使用 RabbitMQ
             };
         }
     }

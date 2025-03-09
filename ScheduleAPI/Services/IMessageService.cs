@@ -9,15 +9,15 @@ namespace ScheduleAPI.Services
     public interface IMessageService
     {
         /// <summary>
-        /// 將訂單推送到隊列
+        /// 將訂單推送到消息隊列
         /// </summary>
-        /// <param name="order">訂單資訊</param>
+        /// <param name="order">要推送的訂單</param>
         Task PushOrderAsync(Order order);
 
         /// <summary>
-        /// 從隊列中獲取訂單
+        /// 從消息隊列中獲取一個訂單
         /// </summary>
-        /// <returns>訂單資訊，如果隊列為空則返回null</returns>
+        /// <returns>訂單對象，如果隊列為空則返回 null</returns>
         Task<Order?> PopOrderAsync();
     }
 } 
