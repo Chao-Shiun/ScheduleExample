@@ -7,9 +7,16 @@ export ENVIRONMENT=Production
 docker stop $(docker ps -aq) 2>/dev/null || true
 docker rm $(docker ps -aq) 2>/dev/null || true
 
+# 檢查 ScheduleAPI/Dockerfile 是否存在
+if [ ! -f "ScheduleAPI/Dockerfile" ]; then
+  echo "錯誤：找不到 ScheduleAPI/Dockerfile。"
+  echo "請確認 ScheduleAPI 目錄和 Dockerfile 是否存在。"
+  exit 1
+fi
+
 # 重新構建 API 映像檔
 echo "重新構建 API 映像檔..."
-docker build -t scheduleexample-api -f Dockerfile .
+docker build -t scheduleexample-api -f ScheduleAPI/Dockerfile ScheduleAPI
 
 # 創建 Docker 網絡
 docker network create app-network 2>/dev/null || true
