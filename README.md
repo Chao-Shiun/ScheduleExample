@@ -187,7 +187,7 @@ export ENVIRONMENT=Development
 $env:ENVIRONMENT="Development"
 
 # 使用開發環境配置啟動
-docker-compose -f docker-compose.yml -f docker-compose.development.yml up -d
+./start-dev.sh
 ```
 
 ### 生產環境（RabbitMQ）
@@ -199,7 +199,7 @@ export ENVIRONMENT=Production
 $env:ENVIRONMENT="Production"
 
 # 使用生產環境配置啟動
-docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d
+./start-prod.sh
 ```
 
 ## API 端點
@@ -209,7 +209,7 @@ docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d
     ```json
     {
       "OrderId": "ORD-001",
-      "Amount": 100.50,
+      "Amount": 100.50
     }
     ```
   - 返回：訂單提交確認
@@ -218,6 +218,5 @@ docker-compose -f docker-compose.yml -f docker-compose.production.yml up -d
 
 如需添加新的消息服務實現：
 
-1. 實現 `IMessageService` 接口
-2. 在 `MessageServiceFactory` 中添加新的實現選擇
-3. 更新配置文件以支持新的消息服務 
+1. 實現 `IMessageService` 介面
+2. 在 `MessageServiceFactory` 中添加新的實現選擇 
