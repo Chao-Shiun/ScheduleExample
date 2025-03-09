@@ -205,7 +205,7 @@ $env:ENVIRONMENT="Production"
 ## API 端點
 
 - **POST /api/Order**：提交新訂單
-  - 請求體範例：
+  - 請求範例：
     ```json
     {
       "OrderId": "ORD-001",
