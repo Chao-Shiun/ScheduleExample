@@ -1,5 +1,4 @@
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using ScheduleAPI.Models;
 using System.Text;
 using System.Text.Json;
