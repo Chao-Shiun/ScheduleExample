@@ -1,5 +1,4 @@
 using StackExchange.Redis;
-using ScheduleAPI.Models;
 using System.Text.Json;
 
 namespace ScheduleAPI.Services

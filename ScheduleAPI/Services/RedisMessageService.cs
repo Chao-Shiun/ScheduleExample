@@ -1,5 +1,4 @@
 using StackExchange.Redis;
-using ScheduleAPI.Models;
 using System.Text.Json;
 using Order = ScheduleAPI.Models.Order;
 

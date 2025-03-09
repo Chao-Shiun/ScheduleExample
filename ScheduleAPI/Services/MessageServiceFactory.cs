@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Configuration;
-
 namespace ScheduleAPI.Services
 {
     /// <summary>
