@@ -27,14 +27,14 @@ docker run -d --name scheduleexample-redis \
   echo "Redis 服務在生產環境中不啟動"
 
 # 等待 RabbitMQ 啟動
-echo "等待 RabbitMQ 啟動 (30秒)..."
-sleep 30
+echo "等待 RabbitMQ 啟動 (10秒)..."
+sleep 10
 
 # 啟動 API 容器
 echo "啟動 API 容器..."
 docker run -d --name scheduleexample-api \
   --network app-network \
-  -p 5566:80 \
+  -p 5566:8080 \
   -e ASPNETCORE_ENVIRONMENT=Production \
   -e ConnectionStrings__Redis=scheduleexample-redis:6379 \
   -e ConnectionStrings__RabbitMQ=scheduleexample-rabbitmq:5672 \
