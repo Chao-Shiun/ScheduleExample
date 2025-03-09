@@ -2,7 +2,7 @@ using ScheduleAPI.Models;
 
 namespace ScheduleAPI.Services
 {
-    public class OrderProcessingService(IMessageService messageService, ILogger<OrderProcessingService> logger)
+    public class OrderProcessingService(IMessageService messageService, IProcessingLogService logService, ILogger<OrderProcessingService> logger)
         : BackgroundService
     {
         private readonly TimeSpan _processInterval = TimeSpan.FromSeconds(5);
@@ -20,23 +20,28 @@ namespace ScheduleAPI.Services
                     }
                     else
                     {
-                        logger.LogInformation("本次起床沒有處理到任何訂單");
+                        var message = "本次起床沒有處理到任何訂單";
+                        logger.LogInformation(message);
+                        await logService.AddLogAsync(message);
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "訂單處理時發生錯誤");
+                    var errorMessage = $"訂單處理時發生錯誤: {ex.Message}";
+                    logger.LogError(ex, errorMessage);
+                    await logService.AddLogAsync(errorMessage);
                 }
 
                 await Task.Delay(_processInterval, stoppingToken);
             }
         }
 
-        private Task ProcessOrderAsync(Order order)
+        private async Task ProcessOrderAsync(Order order)
         {
-            logger.LogInformation("處理訂單: {OrderId}, 金額: {Amount}", order.OrderId, order.Amount);
+            var message = $"處理訂單: {order.OrderId}, 金額: {order.Amount}";
+            logger.LogInformation(message);
+            await logService.AddLogAsync(message);
             // 在這裡可以添加更多訂單處理邏輯
-            return Task.CompletedTask;
         }
     }
 } 

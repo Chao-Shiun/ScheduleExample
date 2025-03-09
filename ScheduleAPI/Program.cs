@@ -7,6 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
+// 添加 SignalR 服務
+builder.Services.AddSignalR();
+
+// 註冊處理日誌服務
+builder.Services.AddSingleton<IProcessingLogService, ProcessingLogService>();
+
 // 根據環境決定使用的訊息服務
 var environment = builder.Environment.EnvironmentName;
 Console.WriteLine($"目前執行環境: {environment}");
@@ -53,6 +59,10 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// 配置 SignalR Hub
+app.MapHub<OrderHub>("/orderhub");
+
 app.MapControllers();
 
 app.Run();
